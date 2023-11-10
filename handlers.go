@@ -55,7 +55,9 @@ func receiveHandler(producer *kafka.Producer, serializer Serializer) func(c *gin
 			return
 		}
 
-		metricsPerTopic, err := processWriteRequest(&req)
+		var bizName = c.GetHeader("Business-Name")
+
+		metricsPerTopic, err := processWriteRequest(&req, bizName)
 		if err != nil {
 			c.AbortWithStatus(http.StatusInternalServerError)
 			logrus.WithError(err).Error("couldn't process write request")

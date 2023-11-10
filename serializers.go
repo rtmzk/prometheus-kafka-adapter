@@ -34,7 +34,7 @@ type Serializer interface {
 }
 
 // Serialize generates the JSON representation for a given Prometheus metric.
-func Serialize(s Serializer, req *prompb.WriteRequest) (map[string][][]byte, error) {
+func Serialize(s Serializer, req *prompb.WriteRequest, header string) (map[string][][]byte, error) {
 	promBatches.Add(float64(1))
 	result := make(map[string][][]byte)
 
@@ -59,6 +59,7 @@ func Serialize(s Serializer, req *prompb.WriteRequest) (map[string][][]byte, err
 				"timestamp": epoch.Format(time.RFC3339),
 				"value":     strconv.FormatFloat(sample.Value, 'f', -1, 64),
 				"name":      name,
+				"biz":       header,
 				"labels":    labels,
 			}
 
