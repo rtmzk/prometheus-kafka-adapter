@@ -30,7 +30,7 @@ func TestSerializeEmptyTimeseriesToJSON(t *testing.T) {
 	serializer, err := NewJSONSerializer()
 	assert.Nil(t, err)
 
-	data, err := Serialize(serializer, request)
+	data, err := Serialize(serializer, request, "test")
 	assert.Nil(t, err)
 	assert.Len(t, data, 0)
 	assert.NotNil(t, data)
@@ -41,13 +41,13 @@ func TestSerializeToJSON(t *testing.T) {
 	assert.Nil(t, err)
 
 	writeRequest := NewWriteRequest()
-	output, err := Serialize(serializer, writeRequest)
+	output, err := Serialize(serializer, writeRequest, "test")
 	assert.Len(t, output["metrics"], 2)
 	assert.Nil(t, err)
 
 	expectedSamples := []string{
-		"{\"value\":\"456\",\"timestamp\":\"1970-01-01T00:00:00Z\",\"name\":\"foo\",\"labels\":{\"__name__\":\"foo\",\"labelfoo\":\"label-bar\"}}",
-		"{\"value\":\"+Inf\",\"timestamp\":\"1970-01-01T00:00:10Z\",\"name\":\"foo\",\"labels\":{\"__name__\":\"foo\",\"labelfoo\":\"label-bar\"}}",
+		"{\"biz\":\"test\",\"value\":\"456\",\"timestamp\":\"1970-01-01T00:00:00Z\",\"name\":\"foo\",\"labels\":{\"__name__\":\"foo\",\"labelfoo\":\"label-bar\"}}",
+		"{\"biz\":\"test\",\"value\":\"+Inf\",\"timestamp\":\"1970-01-01T00:00:10Z\",\"name\":\"foo\",\"labels\":{\"__name__\":\"foo\",\"labelfoo\":\"label-bar\"}}",
 	}
 
 	for i, metric := range output["metrics"] {
@@ -60,7 +60,7 @@ func TestSerializeEmptyTimeseriesToAvroJSON(t *testing.T) {
 	serializer, err := NewAvroJSONSerializer("schemas/metric.avsc")
 	assert.Nil(t, err)
 
-	data, err := Serialize(serializer, request)
+	data, err := Serialize(serializer, request, "test")
 	assert.Nil(t, err)
 	assert.Len(t, data, 0)
 	assert.NotNil(t, data)
@@ -71,7 +71,7 @@ func TestSerializeToAvro(t *testing.T) {
 	assert.Nil(t, err)
 
 	writeRequest := NewWriteRequest()
-	output, err := Serialize(serializer, writeRequest)
+	output, err := Serialize(serializer, writeRequest, "test")
 	assert.Len(t, output["metrics"], 2)
 	assert.Nil(t, err)
 
@@ -93,7 +93,7 @@ func TestTemplatedTopic(t *testing.T) {
 	assert.Nil(t, err)
 
 	writeRequest := NewWriteRequest()
-	output, err := Serialize(serializer, writeRequest)
+	output, err := Serialize(serializer, writeRequest, "test")
 
 	for k := range output {
 		assert.Equal(t, "foo", k, "templated topic failed")
@@ -137,7 +137,7 @@ func BenchmarkSerializeToAvroJSON(b *testing.B) {
 	writeRequest := NewWriteRequest()
 
 	for n := 0; n < 20000; n++ {
-		Serialize(serializer, writeRequest)
+		Serialize(serializer, writeRequest, "test")
 	}
 }
 
@@ -146,6 +146,6 @@ func BenchmarkSerializeToJSON(b *testing.B) {
 	writeRequest := NewWriteRequest()
 
 	for n := 0; n < 20000; n++ {
-		Serialize(serializer, writeRequest)
+		Serialize(serializer, writeRequest, "test")
 	}
 }
